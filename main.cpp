@@ -210,13 +210,25 @@ void readFile(Node*& root){
 
 }
 
+void search(Node*& root, int searchNumber){
+
+
+
+}
+
+void remove(Node*& root, int removeNumber){
+
+
+
+}
+
 
 int main(){
 
   //variables
   char input [100];
   char file [] = "numbers.txt";
-  char addRandom[] = "ADD RANDOM";
+  char addRandom[] = "ADD FILE";
   char addInput[] = "ADD INPUT";
   char print[] = "PRINT";
   char search[] = "SEARCH";
@@ -225,7 +237,7 @@ int main(){
   bool  stillPlaying = true;
 
 
-  cout<< "Type the command terms: ADD RANDOM, PRINT, QUIT" << endl;
+  cout<< "Type the command terms: ADD FILE, ADD INPUT, PRINT, QUIT" << endl;
   Node* root = NULL;
 
   while (stillPlaying == true){
