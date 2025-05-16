@@ -226,53 +226,6 @@ void searchNumm(Node*& root, int searchNumber, bool& present) {
 }
 
 
-void remove(Node*& root, int removeNumber){
-
-  int nodeToBeDeleted = removeNumber;
-  nodeToBeDeleted->color = removeNumber->color;
-  if (nodeToBeDeleted->left == NULL){
-
-    Node* x = nodeToBeDeleted->right;
-    x = nodeToBeDeleted;
-    x->left = NULL; 
-    
-
-  }else{
-    if (nodeToBeDeleted->right == NULL){
-      Node* x = nodeToBeDeleted->left;
-      x = nodeToBeDeleted;
-      x->right = NULL; 
-
-    }
-  }else{
-    Node* successor = root->right;
-    while (successor->left!=NULL){
-      successor = successor->left;
-
-    }
-
-    remove(root->left, nodeToBeDeleted);
-    remove(root->right, nodeToBeDeleted);
-
-    Node* y = nodeToBeDeleted;
-    y->color = nodeToBeDeleted->color;
-    y->right = x;
-    if (nodeToBeDeleted->right == y){
-      y->right = x;
-
-
-    }if (nodeToBeDeleted->left == y){
-      y->left = x;
-
-
-    }
-    
-
-
-  }
-
-}
-
 Node* findMinimum(Node* root){
     while (root->left !=NULL){
         root = root->left; 
@@ -340,7 +293,20 @@ void removee(Node*& root, int removeNumber){
 
 else{ //if node is red and has two children then find the minimum
 
+
+  y = findMinimum(nodeToBeDeleted->left);
+  char originalColor = y->color;
+  x = y->right;
+
+  
+
+  if (y->right !=NULL && y->left !=NULL && y->parent == nodeToBeDeleted){
     
+
+    
+
+
+  }
 }
 
 }
