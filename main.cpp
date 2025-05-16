@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -210,18 +211,139 @@ void readFile(Node*& root){
 
 }
 
-void search(Node*& root, int searchNumber){
+void searchNumm(Node*& root, int searchNumber, bool& present) {
+    if (root == nullptr) {
+        return;
+    }
 
-
-
+    if (root->data == searchNumber) {
+        cout <<"This number is present in the tree" <<endl;
+        present = true;
+    }else{
+        searchNumm(root->left, searchNumber, present);
+        searchNumm(root->right, searchNumber, present);
+    }
 }
+
 
 void remove(Node*& root, int removeNumber){
 
+  int nodeToBeDeleted = removeNumber;
+  nodeToBeDeleted->color = removeNumber->color;
+  if (nodeToBeDeleted->left == NULL){
 
+    Node* x = nodeToBeDeleted->right;
+    x = nodeToBeDeleted;
+    x->left = NULL; 
+    
+
+  }else{
+    if (nodeToBeDeleted->right == NULL){
+      Node* x = nodeToBeDeleted->left;
+      x = nodeToBeDeleted;
+      x->right = NULL; 
+
+    }
+  }else{
+    Node* successor = root->right;
+    while (successor->left!=NULL){
+      successor = successor->left;
+
+    }
+
+    remove(root->left, nodeToBeDeleted);
+    remove(root->right, nodeToBeDeleted);
+
+    Node* y = nodeToBeDeleted;
+    y->color = nodeToBeDeleted->color;
+    y->right = x;
+    if (nodeToBeDeleted->right == y){
+      y->right = x;
+
+
+    }if (nodeToBeDeleted->left == y){
+      y->left = x;
+
+
+    }
+    
+
+
+  }
 
 }
 
+Node* findMinimum(Node* root){
+    while (root->left !=NULL){
+        root = root->left; 
+    }
+    return root; 
+}
+
+
+
+
+
+void removee(Node*& root, int removeNumber){
+    Node* nodeToBeDeleted = root; 
+    
+    while (nodeToBeDeleted != NULL && nodeToBeDeleted->data !=removeNumber){
+        if (removeNumber < nodeToBeDeleted->data){
+            nodeToBeDeleted = nodeToBeDeleted->left; 
+        }else{
+            nodeToBeDeleted = nodeToBeDeleted->right; 
+        }
+    }
+    
+    Node* y = nodeToBeDeleted; 
+    Node* x; 
+    char originalColor = y->color; 
+    
+    // If node to be deleted is a red leaf node just remove it 
+    
+    if (y->left == NULL && y->right == NULL && y->color == 'R'){
+        x = NULL; 
+        if (y->parent == NULL){
+            root = NULL;
+        }else{
+            if (y == y->parent->left) {
+                y->parent->left = NULL;
+            } else {
+                y->parent->right = NULL;
+            }
+        }
+    }
+    
+    //If the node is red and just has one child replace parent with child 
+    
+    else if(y->left == NULL || y->right == NULL) {
+        if (y->left !=NULL){
+            x = y->left;
+        }else{
+            x = y->right; 
+        }
+        x->parent = y->parent; 
+    
+
+    if (y->parent == NULL){ // if parent is NULL that means it is a root
+        root = x; 
+        
+    }else{
+         if (y == y->parent->left) {
+                y->parent->left = x;
+            } else {
+                y->parent->right = x;
+            }
+    }
+    
+}
+
+else{ //if node is red and has two children then find the minimum
+
+    
+}
+
+}
 
 int main(){
 
@@ -237,7 +359,7 @@ int main(){
   bool  stillPlaying = true;
 
 
-  cout<< "Type the command terms: ADD FILE, ADD INPUT, PRINT, QUIT" << endl;
+  cout<< "Type the command terms: ADD FILE, ADD INPUT, PRINT, REMOVE, SEARCH, QUIT" << endl;
   Node* root = NULL;
 
   while (stillPlaying == true){
@@ -269,9 +391,22 @@ int main(){
       printTree(root, depth);
 
     }else if (strcmp(input, search) == 0){
+       int searchNumber;
+        cout << "What number would you like to search in the tree: "<<endl;
+        cin >> searchNumber;
+        bool present = false;
+        searchNumm(root, searchNumber, present);
+        if (present == false){
+            cout<< "This number is not present in the tree" <<endl;
+        }
+
 
 
     }else if (strcmp(input, remove) == 0){
+      cout<<"What number would you like to remove?"<<endl;
+        int removeNumber = 0; 
+        cin>> removeNumber; 
+        removee(root, removeNumber);
 
 
     }else if (strcmp(input, quit) == 0){
