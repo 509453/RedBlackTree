@@ -13,7 +13,8 @@ using namespace std;
 Name: Aleena Shaik
 Date: 4/9/25
 Project: Red Black Tree
-Sources used: Programiz Red Black Tree Logic 
+Sources used: Programiz Red Black Tree Logic
+Diya and Mahi helped me :(
  */
 
 struct Node{
@@ -233,82 +234,149 @@ Node* findMinimum(Node* root){
     return root; 
 }
 
+void fixDeletion(Node*& root, Node* x, Node* xParent) {
+    while (x != root && (x == NULL || x->color == 'B')) {
+        if (x == xParent->left) {
+            Node* sibling = xParent->right;
+            
+            //IF THE COLOR IS RED WE NEED TO CHANGE COLOR AND LEFT ROTATE
 
-
-
-
-void removee(Node*& root, int removeNumber){
-    Node* nodeToBeDeleted = root; 
-    
-    while (nodeToBeDeleted != NULL && nodeToBeDeleted->data !=removeNumber){
-        if (removeNumber < nodeToBeDeleted->data){
-            nodeToBeDeleted = nodeToBeDeleted->left; 
-        }else{
-            nodeToBeDeleted = nodeToBeDeleted->right; 
-        }
-    }
-    
-    Node* y = nodeToBeDeleted; 
-    Node* x; 
-    char originalColor = y->color; 
-    
-    // If node to be deleted is a red leaf node just remove it 
-    
-    if (y->left == NULL && y->right == NULL && y->color == 'R'){
-        x = NULL; 
-        if (y->parent == NULL){
-            root = NULL;
-        }else{
-            if (y == y->parent->left) {
-                y->parent->left = NULL;
+            if (sibling && sibling->color == 'R') {
+                 sibling->color = 'B';
+                xParent->color = 'R';
+                rotateLeft(root, xParent);
+                sibling = xParent->right;
+          }
+          // when sibling is black and both of its children are black case 1 
+          if ((!sibling || (sibling->left && sibling->left->color == 'B') && 
+                 (sibling->right && sibling->right->color == 'B'))) {
+                if (sibling!=NULL){
+                    sibling->color = 'R';
+                } 
+                x = xParent;
+                xParent = xParent->parent;//move up to the tree 
             } else {
-                y->parent->right = NULL;
-            }
-        }
-    }
-    
-    //If the node is red and just has one child replace parent with child 
-    
-    else if(y->left == NULL || y->right == NULL) {
-        if (y->left !=NULL){
-            x = y->left;
-        }else{
-            x = y->right; 
-        }
-        x->parent = y->parent; 
-    
+                //if sibling's right child is black, rotate sibling right case 2
+               if (!sibling->right || sibling->right->color == 'B') {
+                   if (sibling->left) sibling->left->color = 'B';
+                    sibling->color = 'R';
+                    rotateRight(root, sibling);
+                    sibling = xParent->right;
+                }
 
-    if (y->parent == NULL){ // if parent is NULL that means it is a root
-        root = x; 
-        
-    }else{
-         if (y == y->parent->left) {
-                y->parent->left = x;
-            } else {
-                y->parent->right = x;
+                //adjust colors and rotate left
+                sibling->color = xParent->color;
+                xParent->color = 'B';
+                if (sibling->right!= NULL){
+                   sibling->right->color = 'B'; 
+                } 
+                rotateLeft(root, xParent);
+                break;
             }
+        } else {
+            Node* sibling = xParent->left;
+
+            if (sibling && sibling->color == 'R') {
+                sibling->color = 'B';
+                xParent->color = 'R';
+                rotateRight(root, xParent);
+                sibling = xParent->left;
+            }
+
+            //  when sibling is black  and both of its children are black case 3
+            if ((!sibling || (sibling->left && sibling->left->color == 'B') && 
+                 (sibling->right && sibling->right->color == 'B'))) {
+                if (sibling!=NULL){
+                    sibling->color = 'R';
+                } 
+                x = xParent;
+                xParent = xParent->parent;
+            } else {
+                //if sibling's left child is black, rotate sibling left
+                if (!sibling->left || sibling->left->color == 'B') {
+                    if (sibling->right) sibling->right->color = 'B';
+                    sibling->color = 'R';
+                    rotateLeft(root, sibling);
+                    sibling = xParent->left;
+     }
+     //adjust colors and rotate right 
+           sibling->color = xParent->color;
+         xParent->color = 'B';
+          if (sibling->left!=NULL){
+              sibling->left->color = 'B';
+          }
+          rotateRight(root, xParent);
+         break;
+             }
+        }
     }
-    
+
+    if (x != NULL) {
+        x->color = 'B';
+    }
 }
 
-else{ //if node is red and has two children then find the minimum
+void removee(Node*& root, int removeNumber) {
+    Node* nodeToBeDeleted = root;
 
+    //finding the node to delete by traversing through the tree
+    //from binarysearchtree
+    while (nodeToBeDeleted != NULL && nodeToBeDeleted->data != removeNumber) {
+        if (removeNumber < nodeToBeDeleted->data)
+            nodeToBeDeleted = nodeToBeDeleted->left;
+        else
+            nodeToBeDeleted = nodeToBeDeleted->right;
+    }
 
-  y = findMinimum(nodeToBeDeleted->left);
-  char originalColor = y->color;
-  x = y->right;
-
-  
-
-  if (y->right !=NULL && y->left !=NULL && y->parent == nodeToBeDeleted){
-    
-
-    
-
-
-  }
+    // if null then nothing to do
+    if (nodeToBeDeleted == NULL) {
+        return;
 }
 
+//store the variables make new nodes and save original color
+    Node* y = nodeToBeDeleted;
+    Node* x;
+    Node* xParent;
+    char originalColor = y->color;
+
+    //if node has two children;replace with successor
+    if (nodeToBeDeleted->left != NULL && nodeToBeDeleted->right != NULL) {
+        y = findMinimum(nodeToBeDeleted->right);
+        originalColor = y->color;
+        nodeToBeDeleted->data = y->data;
+        nodeToBeDeleted = y;
+    }
+    
+    //got it from diya which is from programiz
+    x = (nodeToBeDeleted->left != NULL) ? nodeToBeDeleted->left : nodeToBeDeleted->right;
+
+    if (x != NULL) {
+        x->parent = nodeToBeDeleted->parent;
+    }
+
+    xParent = nodeToBeDeleted->parent;
+
+    //adjust the parent pointers
+    if (nodeToBeDeleted->parent == NULL) {
+        root = x;
+    } else if (nodeToBeDeleted == nodeToBeDeleted->parent->left) {
+        nodeToBeDeleted->parent->left = x;
+    } else {
+        nodeToBeDeleted->parent->right = x;
+    }
+
+    //if black we need to fix violoations....
+    if (originalColor == 'B') {
+        fixDeletion(root, x, xParent);
+    }
+
+ 
+    delete nodeToBeDeleted;
+
+    // the root is ALWAYS black
+    if (root != NULL) {
+        root->color = 'B';
+    }
 }
 
 int main(){
