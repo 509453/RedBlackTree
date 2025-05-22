@@ -15,7 +15,7 @@ Date: 4/9/25
 Project: Red Black Tree
 Sources used: Programiz Red Black Tree Logic
 Diya and Mahi helped me :(
- */
+MY SISTER*/
 
 struct Node{
   int data;
@@ -234,48 +234,58 @@ Node* findMinimum(Node* root){
     return root; 
 }
 
+
 void fixDeletion(Node*& root, Node* x, Node* xParent) {
     while (x != root && (x == NULL || x->color == 'B')) {
-        if (x == xParent->left) {
-            Node* sibling = xParent->right;
-            
-            //IF THE COLOR IS RED WE NEED TO CHANGE COLOR AND LEFT ROTATE
+        if (x == (xParent ? xParent->left : NULL)) {
+            //NEED TO DO IT FOR BOTH LEFT AND RIGHT 
+            Node* sibling = xParent ? xParent->right : NULL;
 
+            //  Sibling is red
             if (sibling && sibling->color == 'R') {
-                 sibling->color = 'B';
+                sibling->color = 'B';
                 xParent->color = 'R';
                 rotateLeft(root, xParent);
                 sibling = xParent->right;
-          }
-          // when sibling is black and both of its children are black case 1 
-          if ((!sibling || (sibling->left && sibling->left->color == 'B') && 
-                 (sibling->right && sibling->right->color == 'B'))) {
+            }
+
+            // when it is black and there are both children 
+            if (!sibling || 
+                ((sibling->left == NULL || sibling->left->color == 'B') &&
+                 (sibling->right == NULL || sibling->right->color == 'B'))) {
                 if (sibling!=NULL){
-                    sibling->color = 'R';
+                  sibling->color = 'R';  
                 } 
                 x = xParent;
-                xParent = xParent->parent;//move up to the tree 
+                xParent = xParent->parent;
             } else {
-                //if sibling's right child is black, rotate sibling right case 2
-               if (!sibling->right || sibling->right->color == 'B') {
-                   if (sibling->left) sibling->left->color = 'B';
+                // sibling is black and its right child is black, left child is red
+                if (sibling->right == NULL || sibling->right->color == 'B') {
+                    if (sibling->left!=NULL){
+                        sibling->left->color = 'B';
+                    } 
                     sibling->color = 'R';
                     rotateRight(root, sibling);
                     sibling = xParent->right;
                 }
 
-                //adjust colors and rotate left
-                sibling->color = xParent->color;
-                xParent->color = 'B';
-                if (sibling->right!= NULL){
-                   sibling->right->color = 'B'; 
+                // sibling is black and right child is red
+                if (sibling!=NULL){
+                   sibling->color = xParent->color; 
+                } 
+                if (xParent!=NULL){
+                    xParent->color = 'B'; 
+                } 
+                if (sibling!=NULL && sibling->right!=NULL){
+                  sibling->right->color = 'B';  
                 } 
                 rotateLeft(root, xParent);
                 break;
             }
-        } else {
-            Node* sibling = xParent->left;
 
+        } else {
+         Node* sibling = xParent ? xParent->left : NULL;
+//when it is red 
             if (sibling && sibling->color == 'R') {
                 sibling->color = 'B';
                 xParent->color = 'R';
@@ -283,38 +293,48 @@ void fixDeletion(Node*& root, Node* x, Node* xParent) {
                 sibling = xParent->left;
             }
 
-            //  when sibling is black  and both of its children are black case 3
-            if ((!sibling || (sibling->left && sibling->left->color == 'B') && 
-                 (sibling->right && sibling->right->color == 'B'))) {
-                if (sibling!=NULL){
-                    sibling->color = 'R';
-                } 
+            // when sibling is black and both children are black
+            if (!sibling ||
+                ((sibling->left == NULL || sibling->left->color == 'B') &&
+                 (sibling->right == NULL || sibling->right->color == 'B'))) {
+	      if (sibling!=NULL){
+		sibling->color = 'R';
+
+	      }
                 x = xParent;
                 xParent = xParent->parent;
             } else {
-                //if sibling's left child is black, rotate sibling left
-                if (!sibling->left || sibling->left->color == 'B') {
+                // when sibling's left child is black and right child is red
+                if (sibling->left == NULL || sibling->left->color == 'B') {
                     if (sibling->right) sibling->right->color = 'B';
                     sibling->color = 'R';
                     rotateLeft(root, sibling);
                     sibling = xParent->left;
-     }
-     //adjust colors and rotate right 
-           sibling->color = xParent->color;
-         xParent->color = 'B';
-          if (sibling->left!=NULL){
-              sibling->left->color = 'B';
-          }
-          rotateRight(root, xParent);
-         break;
-             }
+        
         }
-    }
+        if (sibling!=NULL){
+            sibling->color = xParent->color; 
+            } 
+            if (xParent!=NULL){
+                xParent->color = 'B';
+                } 
+        if (sibling !=NULL && sibling->left!=NULL){
+              sibling->left->color = 'B'; 
+              } 
+             rotateRight(root, xParent);
+             break;
+            }
+            }
+       }
 
     if (x != NULL) {
         x->color = 'B';
     }
 }
+
+
+
+
 
 void removee(Node*& root, int removeNumber) {
     Node* nodeToBeDeleted = root;
